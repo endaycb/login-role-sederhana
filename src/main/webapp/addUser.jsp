@@ -35,6 +35,7 @@
                     </td>
                 </tr>
             </table>
+            <a href="user">Cancel</a>
         </form>
     </body>
 </html>
