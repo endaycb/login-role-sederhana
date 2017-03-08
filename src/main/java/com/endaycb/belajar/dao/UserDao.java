@@ -6,8 +6,7 @@
 package com.endaycb.belajar.dao;
 
 import com.endaycb.belajar.config.Conn;
-import com.endaycb.belajar.domain.User;
-import com.endaycb.belajar.domain.UserDetailMenu;
+import com.endaycb.belajar.model.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,6 +14,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -24,25 +25,14 @@ public class UserDao {
 
     private Connection connection;
 
-    final private String readAll = "SELECT * FROM user";
-    final private String readAllUserMenu = "SELECT * FROM user_detail_menu INNER JOIN user ON user_detail_menu.id_user = user.id WHERE id = ?";
-    final private String readById = "SELECT * FROM user WHERE id = ?";
-    
-    final private String save = "INSERT INTO user (nama, username, password) VALUES (?, ?, ?)";
-    final private String saveUserMenu = "INSERT INTO menu (id_user, menu, is_allowed) VALUES (?, ?, ?)";
-    
-    final private String update = "UPDATE user SET name = ?, username = ?, password = ? WHERE id = ?";
-    final private String updateUserMenu = "UPDATE user_detail_menu SET is_allowed = ? WHERE id_user = ? AND menu = ?";
-    
-    final private String delete = "DELETE FROM user WHERE id = ?";
-    final private String deleteUserMenu = "DELETE FROM user_detail_menu WHERE id_user = ?";
-
     public UserDao() {
         Conn conn = new Conn();
         connection = conn.Conn();
     }
 
     public List<User> getAll() {
+        String readAll = "SELECT * FROM user";
+        
         List<User> listUser = null;
         
         Statement st = null;
@@ -58,23 +48,18 @@ public class UserDao {
                 user.setUsername(rs.getString("username"));
                 user.setPassword(rs.getString("password"));
                 
-                Statement st2 = connection.createStatement();
-                ResultSet rs2 = st2.executeQuery(readAllUserMenu);
-                
-                
                 listUser.add(user);
             }
             
-            
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+             ex.printStackTrace();
         } finally {
             try {
                 if (st != null) {
                     st.close();
                 }
             } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
+                 ex.printStackTrace();
             }
 
         }
@@ -83,6 +68,8 @@ public class UserDao {
     }
 
     public User getById(Integer id) {
+        String readById = "SELECT * FROM user WHERE id = ?";
+        
         User user = null;
         PreparedStatement ps = null;
 
@@ -99,22 +86,17 @@ public class UserDao {
                 user.setName(rs.getString("name"));
                 user.setUsername(rs.getString("username"));
                 user.setPassword(rs.getString("password"));
-                
-                Statement st2 = connection.createStatement();
-                ResultSet rs2 = st2.executeQuery(readAllUserMenu);
-                
-                
             }
 
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+             ex.printStackTrace();
         } finally {
             try {
                 if (ps != null) {
                     ps.close();
                 }
             } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
+                 ex.printStackTrace();
             }
 
         }
@@ -122,7 +104,30 @@ public class UserDao {
         return user;
     }
 
-    public void update(User user) {
+    public void insert(User user){
+        String save = "INSERT INTO user (name, username, password) VALUES (?, ?, ?)";
+        
+        PreparedStatement ps = null;
+        try{
+            ps = connection.prepareStatement(save);
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getUsername());
+            ps.setString(3, user.getPassword());
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally{
+            if(ps != null) try {
+                ps.close();
+            } catch (SQLException ex) {
+                 ex.printStackTrace();
+            }
+        }
+    }
+    
+    public void update(User user){
+        String update = "UPDATE user SET name = ?, username = ?, password = ? WHERE id = ?";
+        
         PreparedStatement ps = null;
         try{
             ps = connection.prepareStatement(update);
@@ -142,28 +147,54 @@ public class UserDao {
                     ps.close();
                 }
             } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
+                ex.printStackTrace();
             }
         }
     }
     
     public void delete(Integer id) {
+        String delete = "DELETE FROM user WHERE id = ?";
         PreparedStatement ps = null;
         try{
-            ps = connection.prepareStatement(update);
+            ps = connection.prepareStatement(delete);
             ps.setInt(1, id);
             
             ps.executeUpdate();
         } catch(SQLException ex){
-            System.out.println(ex.getMessage());
+            ex.printStackTrace();
         } finally{
             try {
                 if (ps != null) {
                     ps.close();
                 }
             } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
+                ex.printStackTrace();
             }
         }
+    }
+    
+    public String login(String username, String password){
+        String login = "SELECT * FROM user WHERE username = ? AND password = ?";
+        String message =  null;
+        PreparedStatement ps = null;
+        try{
+            ps = connection.prepareStatement(login);
+            ps.setString(1, username);
+            ps.setString(2, password);
+            
+            ResultSet rs = ps.executeQuery();
+            
+            if(rs.next() && username.equals(rs.getString("username")) && password.equals(rs.getString("password"))){
+                message = "login sukses";
+            }else{
+                message = "login gagal";
+            }
+            
+            
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        
+        return message;
     }
 }

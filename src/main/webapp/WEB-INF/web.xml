@@ -11,24 +11,18 @@
   	<description>
 		Aplikasi LOGIN SEDERHANA
 	</description>
-	<!--
+        
         <servlet>
-            <servlet-name>Buku</servlet-name>
-            <servlet-class>com.endaycb.belajar.controller.ControllerBuku</servlet-class>
+            <servlet-name>User</servlet-name>
+            <servlet-class>com.endaycb.belajar.controller.UserController</servlet-class>
         </servlet>
         
         <servlet-mapping>
-            <servlet-name>Buku</servlet-name>
-            <url-pattern>/buku</url-pattern>
+            <servlet-name>User</servlet-name>
+            <url-pattern>/user</url-pattern>
         </servlet-mapping>
         
-        <session-config>
-            <session-timeout>30</session-timeout>
-        </session-config>
-        
         <welcome-file-list>
-            <welcome-file>buku.jsp</welcome-file>
+            <welcome-file>home.jsp</welcome-file>
         </welcome-file-list>
-
-	-->
 </web-app>
