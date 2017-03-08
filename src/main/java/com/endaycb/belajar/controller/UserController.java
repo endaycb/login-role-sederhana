@@ -10,10 +10,12 @@ import com.endaycb.belajar.model.User;
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -37,7 +39,7 @@ public class UserController extends HttpServlet {
     }
 
     public String login(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        User loggedInUser = (User) req.getSession().getAttribute("loggedInUser");
+        Boolean loggedInUser = (Boolean) req.getSession().getAttribute("loggedInUser");
         try {
             if (loggedInUser != null) {
                 urlRedirect = urlHome;
@@ -46,12 +48,7 @@ public class UserController extends HttpServlet {
                 String password = req.getParameter("password");
 
                 if (userDao.login(username, password) == "login sukses") {
-                    loggedInUser = new User();
-                    loggedInUser.setUsername(username);
-                    loggedInUser.setPassword(password);
-
                     req.getSession(true).setAttribute("loggedIn", true);
-                    req.getSession(true).setAttribute("loggedInUser", loggedInUser);
 
                     urlRedirect = urlHome;
                 } else {
@@ -66,19 +63,13 @@ public class UserController extends HttpServlet {
     }
 
     public void processReqRes(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
-        User loggedInUser = (User) req.getSession().getAttribute("loggedInUser");
+        Boolean loggedInUser = (Boolean) req.getSession().getAttribute("loggedIn");
         String go = req.getParameter("go");
 
         if (loggedInUser == null) {
             login(req, res);
-            System.out.println("a");
         } else if (go != null) {
-            if (go.equalsIgnoreCase("users")) {
-                System.out.println("users");
-                urlRedirect = urlUsers;
-            } else if (go.equalsIgnoreCase("delete")){
-                userDao.delete(Integer.parseInt(req.getParameter("id")));
-            } else if(go.equalsIgnoreCase("addUser")){
+            if(go.equalsIgnoreCase("addUser")){
                 urlRedirect = urlAddUser;
             } else if(go.equalsIgnoreCase("insert")){
                 User user = new User();
@@ -88,6 +79,37 @@ public class UserController extends HttpServlet {
                 
                 userDao.insert(user);
                 urlRedirect = urlUsers;
+            }else if (go.equalsIgnoreCase("delete")){
+                userDao.delete(Integer.parseInt(req.getParameter("id")));
+            }else if(go.equalsIgnoreCase("getDetail")){
+                
+                User user = userDao.getById(Integer.parseInt(req.getParameter("idUser")));
+                JSONObject jsonObj = new JSONObject();
+                jsonObj.put("id", user.getId());
+                jsonObj.put("name", user.getName());
+                jsonObj.put("username", user.getUsername());
+                jsonObj.put("password", user.getPassword());
+                 
+                  
+                res.setContentType("application/json");
+                res.getWriter().write(jsonObj.toString());
+                return;
+                
+            }else if(go.equalsIgnoreCase("update")){
+                User user = new User();
+                user.setId(Integer.parseInt(req.getParameter("id")));
+                user.setName(req.getParameter("name"));
+                user.setUsername(req.getParameter("username"));
+                user.setPassword(req.getParameter("password"));
+                
+                userDao.update(user);
+                
+                urlRedirect = urlUsers;
+            
+            }else if(go.equalsIgnoreCase("logout")){
+                req.getSession().removeAttribute("loggedIn");
+                res.sendRedirect("");
+                return;
             }else{
                 urlRedirect = urlUsers;
             }
@@ -99,6 +121,7 @@ public class UserController extends HttpServlet {
         if(urlRedirect == urlUsers){
             req.setAttribute("listUser", userDao.getAll());
         }
+        
         rd = req.getRequestDispatcher(urlRedirect);
         rd.forward(req, res);
     }
