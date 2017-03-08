@@ -19,7 +19,7 @@ public class Conn {
     final private String dbClass = "com.mysql.jdbc.Driver"; 
     final private String dbUrl = "jdbc:mysql://localhost/login_sederhana";
     final private String dbUsername = "root";
-    final private String dbPassword = "";
+    final private String dbPassword = "root";
     
     public Connection Conn(){
         try{
