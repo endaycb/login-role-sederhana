@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+                      http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+  version="3.0"
+  metadata-complete="true">
+
+  	<display-name>LOGIN SEDERHANA</display-name>
+  	<description>
+		Aplikasi LOGIN SEDERHANA
+	</description>
+	<!--
+        <servlet>
+            <servlet-name>Buku</servlet-name>
+            <servlet-class>com.endaycb.belajar.controller.ControllerBuku</servlet-class>
+        </servlet>
+        
+        <servlet-mapping>
+            <servlet-name>Buku</servlet-name>
+            <url-pattern>/buku</url-pattern>
+        </servlet-mapping>
+        
+        <session-config>
+            <session-timeout>30</session-timeout>
+        </session-config>
+        
+        <welcome-file-list>
+            <welcome-file>buku.jsp</welcome-file>
+        </welcome-file-list>
+
+	-->
+</web-app>
